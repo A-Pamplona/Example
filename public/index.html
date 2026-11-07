@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Frequency</title>
+  <script>
+    // Define o tema antes da pintura para não piscar; sem preferência salva, segue o sistema
+    (() => {
+      let theme = null;
+      try { theme = localStorage.getItem('theme'); } catch {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>Word Frequency</h1>
+      <button type="button" class="secondary" id="theme-toggle">Modo escuro</button>
+    </header>
+    <p class="app-subtitle">Cole um texto ou informe uma URL e veja quantas vezes cada palavra aparece.</p>
+
+    <form class="input-form" id="input-form" novalidate>
+      <fieldset class="mode-switch">
+        <legend class="visually-hidden">Origem do texto</legend>
+        <label><input type="radio" name="mode" value="text" checked> Texto</label>
+        <label><input type="radio" name="mode" value="url"> URL de uma página</label>
+        <label><input type="radio" name="mode" value="file"> Arquivo .txt</label>
+      </fieldset>
+
+      <div id="text-field">
+        <label for="text-input">Texto</label>
+        <textarea id="text-input" name="text" rows="8" maxlength="2048"
+          placeholder="Digite ou cole seu texto aqui..."></textarea>
+        <span class="char-counter" id="char-counter">0 / 2048</span>
+      </div>
+
+      <div id="url-field" hidden>
+        <label for="url-input">URL</label>
+        <input type="url" id="url-input" name="url" placeholder="https://exemplo.com/artigo">
+      </div>
+
+      <div id="file-field" hidden>
+        <label class="dropzone" id="dropzone" for="file-input">
+          <span id="file-label">Arraste um arquivo .txt aqui ou clique para escolher (até 1 MB)</span>
+          <input type="file" id="file-input" name="file" accept=".txt,text/plain">
+        </label>
+      </div>
+
+      <div class="input-footer">
+        <label class="inline-field">
+          Analisar por
+          <select id="unit-select">
+            <option value="1">Palavras</option>
+            <option value="2">Pares de palavras</option>
+            <option value="3">Trios de palavras</option>
+          </select>
+        </label>
+        <label class="inline-field">
+          Ignorar palavras comuns
+          <select id="stopwords-select">
+            <option value="">Não</option>
+            <option value="pt">Português</option>
+            <option value="en">English</option>
+            <option value="both">Ambos</option>
+          </select>
+        </label>
+        <button type="submit" id="translate-button" title="Atalho: Ctrl+Enter">Analisar</button>
+      </div>
+      <p class="error-message" id="error-message" role="alert" hidden></p>
+    </form>
+
+    <section class="results" aria-labelledby="results-title">
+      <div class="results-header">
+        <h2 id="results-title">Frequência das palavras</h2>
+        <button type="button" class="secondary" id="export-button" hidden>Exportar CSV</button>
+      </div>
+
+      <dl class="summary" id="summary" hidden></dl>
+
+      <div class="results-tools" id="results-tools" hidden>
+        <label class="inline-field">
+          Buscar
+          <input type="search" id="search-input" placeholder="palavra...">
+        </label>
+        <label class="inline-field">
+          Mínimo de ocorrências
+          <select id="min-count-select">
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="5">5+</option>
+          </select>
+        </label>
+        <label class="inline-field">
+          Visualização
+          <select id="view-select">
+            <option value="bar">Colunas</option>
+            <option value="horizontalBar">Barras horizontais</option>
+            <option value="doughnut">Rosca</option>
+            <option value="cloud">Nuvem de palavras</option>
+          </select>
+        </label>
+        <label class="inline-field">
+          Top
+          <select id="top-n-select">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="chart-container" id="chart-container" hidden>
+        <canvas id="frequency-chart" aria-label="Gráfico das palavras mais frequentes" role="img"></canvas>
+      </div>
+
+      <div class="cloud-container" id="cloud-container" aria-label="Nuvem de palavras" role="list" hidden></div>
+
+      <table class="frequency-table" id="frequency-table">
+        <thead>
+          <tr>
+            <th scope="col" id="term-header">Palavra</th>
+            <th scope="col" class="numeric">Ocorrências</th>
+          </tr>
+        </thead>
+        <tbody id="frequency-table-body">
+          <tr class="empty-row">
+            <td colspan="2">Nenhum resultado ainda.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // Módulos ES não carregam via file://; avisa em vez de falhar em silêncio
+    if (location.protocol === 'file:') {
+      const warning = document.createElement('p');
+      warning.setAttribute('role', 'alert');
+      warning.style.cssText = 'margin:0;padding:1rem;background:#fef2f2;color:#b91c1c;font-weight:600;text-align:center';
+      warning.textContent = 'Esta página não funciona aberta direto pelo arquivo. Rode "npm start" no terminal e acesse http://localhost:3000';
+      document.body.prepend(warning);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

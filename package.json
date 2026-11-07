@@ -1,0 +1,15 @@
+{
+  "name": "word-frequency",
+  "version": "1.0.0",
+  "description": "Conta a frequência de palavras em um texto ou página web",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "express": "^4.21.0"
+  }
+}
