@@ -1,1 +1,54 @@
 node_modules/
+
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Empacotamento e build
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+pip-wheel-metadata/
+
+# Testes e cobertura
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Tipagem e lint
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Bancos locais (SQLite) e migrações temporárias
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# IDEs e sistema
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
